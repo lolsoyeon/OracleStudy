@@ -1,0 +1,6 @@
+conn hr/lion
+sqlplus hr/lion
+			 
+			 권한(롤 - 권한(역할)을 묶어놓은것)
+conn sys/java002$     as sysdba(data base administer)
+sqlplus sys java002$  as sysdba
