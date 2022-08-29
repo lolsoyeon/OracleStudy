@@ -14,7 +14,7 @@
    유일성을 보장하기 위한 제약조건이다.
    
    
-3. 참조 무결성(Relation Integrity)ㄴ
+3. 참조 무결성(Relation Integrity)
    참조 무결성은 릴레이션 간의 데이터 일관성을
    보장하기위한 제약조건이다.
     
@@ -48,7 +48,6 @@
 
 --1. 테이블에 대한 기본 키를 생성한다.
 
-
                                         -- 싱글 ,  복합  
 --2. 테이블에서 각 행을 유일하게 식별하는 컬럼 또는 컬럼의 집합이다.
 --  기본키는 테이블 당 최대 하나만 존재한다.
@@ -61,7 +60,7 @@
 -- ① 컬럼 레벨의 형식
 -- 컬럼명 데이터타입[CONSTRAINT CONSTRAINT명] PRIMARY KEY[(컬럼명,..)]
 
--- ② 테이블 레벨의 형식     ㅇ★★★★추천
+-- ② 테이블 레벨의 형식     ★★★★추천
 -- 컬럼명 데이터 타입,
 -- 컬럼명 데이터 타입,
 -- CONSTRAINT CONSTRAINT명 PRIMARY KEY[(컬럼명,..)
@@ -551,7 +550,6 @@ HR	TEST7_COL2_UK	TBL_TEST7	U	COL2
 
 
 
-
 --------------------------------------------------------------------------------
 
 -- ■■■ CHECK(CK:C) ■■■--
@@ -722,11 +720,11 @@ DESC TBL_TESTMEMBER;
 -- 제약 조건 추가
 ALTER TABLE TBL_TESTMEMBER
 ADD( CONSTRAINT TESTMEMBER_SID_PK PRIMARY KEY(SID)
-    , CONSTRAINT TESTMEMBER_SSD_CK CHECK(주민번호 8번째자리 1개가 '1' 또는 '2' 또는 '3' 또는'4'));
+    , CONSTRAINT TESTMEMBER_SSD_CK CHECK(주민번호 8번째자리 1개가 '1' 또는 '2' 또는 '3' 또는'4') );
 
 ALTER TABLE TBL_TESTMEMBER
 ADD( CONSTRAINT TESTMEMBER_SID_PK PRIMARY KEY(SID)
-    , CONSTRAINT TESTMEMBER_SSD_CK CHECK(SUBSTR(SSN 8,1)가 '1' 또는 '2' 또는 '3' 또는'4'));
+    , CONSTRAINT TESTMEMBER_SSD_CK CHECK(SUBSTR(SSN 8,1)가 '1' 또는 '2' 또는 '3' 또는'4') );
 
 ALTER TABLE TBL_TESTMEMBER
 ADD( CONSTRAINT TESTMEMBER_SID_PK PRIMARY KEY(SID)
@@ -794,7 +792,7 @@ COMMIT;
 -- ① 컬럼 레벨의 형식
 -- 컬럼명 데이터타입 [CONSTRAINT CONSTRAINT명]
 --                  REFERENCES 참조테이블명(참조컬럼명)
---                  [ON DELETE CASCADE | ON DELETE SET NULL] → 추가옵션(있을수도 없을수도있음)
+--                  [ON DELETE CASCADE | ON DELETE SET NULL] → 추가옵션(있을수도 없을수도 있음)
 
 
 -- ② 테이블 레벨의 형식
