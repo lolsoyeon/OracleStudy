@@ -283,8 +283,6 @@ ON U.JECODE = J.JECODE AND U.JUSU= J.JUSU;
 
 
 
-
-
 SELECT U.JUNO"주문번호", T.JECODE"제품코드", U.JUSU"주문량", U.JUDAY"주문일자"
 FROM
 (
