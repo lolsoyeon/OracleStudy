@@ -104,8 +104,6 @@ BEGIN
 END;
 
 
-
-
 --○ 외부 입력 처리
 -- ACCEPT 구문
 -- ACCEPT 변수명 PROMPT '메세지';
@@ -116,8 +114,7 @@ END;
 --○ 정수 두 개를 외부로부터(사용자로부터) 입력받아
 --  이들의 덧셈 결과를 출력하는 PL/SQL 구문을 작성한다.
 
-
--- 내풀이
+------ 내풀이①
 ACCEPT NUM PROMPT '정수를 입력 해주세요';
 
 ACCEPT NUM1 PROMPT '정수를 입력 해주세요';
@@ -133,6 +130,26 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('RESULT : ' || RESULT);
     
 END;
+--==>> RESULT : 30
+---내 풀이 ②
+ACCEPT NUM PROMPT '정수를 입력 해주세요';
+
+ACCEPT NUM1 PROMPT '정수를 입력 해주세요';
+
+DECLARE
+    SEL     NUMBER := &NUM;
+    SEL1    NUMBER := &NUM1;
+    RESULT  NUMBER(10);
+BEGIN
+    --SEL + SEL2 := &RESULT
+     -- RESULT := &NUM + &NUM1;  가능
+     RESULT := SEL + SEL1;
+    
+    DBMS_OUTPUT.PUT_LINE(SEL ||' + '|| SEL1 || ' = '|| RESULT);
+    
+END;
+
+--==>> 1 + 60 = 61
 
 --------------------- T 선생님 풀이
 ACCEPT N1 PROMPT '첫 번째 정수를 입력하세요';
@@ -256,10 +273,6 @@ END;
 
 
 
-
-
-
-
 --○ 기본 반복문
 -- LOOP ~ END LOOP; 
 
@@ -289,7 +302,7 @@ BEGIN
 END;
 
 
----------- T 선생님 풀이
+------------------------------------------  T 선생님 풀이
 
 DECLARE
     N  NUMBER;
@@ -306,12 +319,12 @@ END;
 
 --○ WHILE 반복문
 
--- WHILE LOOP ~ END LOOPO;
+-- WHILE LOOP ~ END LOOP;
 
 -- 1. 제어 조건이 TRUE 인 동안 일련의 문장을 반복하기 위해
--- WHILE LOOP 구문을 사용한다.
+--   WHILE LOOP 구문을 사용한다.
 --   조건은 반복이 시작되는 시점에 체크하게 되어
---   LOOP내의 문장이 한 번도 수행되지 않을 경우도 있다.
+--   LOOP 내의 문장이 한 번도 수행되지 않을 경우도 있다.
 --   LOOP 를 시작할 때 조건이 FALSE 이면 반복 문장을 탈출하게 된다.
 
 -- 2. 형식 및 구조
@@ -337,7 +350,7 @@ BEGIN
 END;
 
 
--------- 선생님 풀이
+------------------------------------------  T 선생님 풀이
 
 DECLARE
     N  NUMBER;
@@ -408,18 +421,17 @@ BEGIN
 END;
 
 
-
 -- 2. WHILE LOOP문
 
 ACCEPT NUM PROMPT '단을 입력하세요 : ';
 DECLARE
-    NWH     NUMBER;     -- 1 2 3 4 커지면거 곱해진다.
+    NWH     NUMBER;     -- 1 2 3 4 커지면서 곱해진다.
     S       NUMBER;     -- 구구단 결과값
 BEGIN
     NHW := 1;
     S := NWH * &NUM;
     
-    WHILE N<9 LOOP
+    WHILE N < 9 LOOP
         DBMS_OUTPUT.PUT_LINE(S);
         NWH := NWH + 1;
     END LOOP;
@@ -438,7 +450,7 @@ END;
 
 
 
-------------------------------------------- 선생님
+------------------------------------------  T 선생님 풀이
 -- 1. LOOP문
 
 ACCEPT NUM PROMPT '단을 입력하세요 : ';
@@ -559,7 +571,7 @@ BEGIN
     
 END;
 
----------------------- 선생님
+------------------------------------------  T 선생님 풀이
 
 DECLARE
     N   NUMBER;

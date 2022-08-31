@@ -1,6 +1,7 @@
 SELECT USER
 FROM DUAL;
 --==>> SCOTT
+
 SELECT *
 FROM TBL_INSA;
 
@@ -18,13 +19,17 @@ FROM TBL_INSA;
 
 
 
+SELECT FN_GENDER('941124-2903712') "성별"
+FROM DUAL;
 
+--○ 정의한 함수 테스트
+SELECT FN_POW(10, 3) "결과 확인"
+FROM DUAL;
+--==>> 1000
 
-
-
-
-
-
+SELECT FN_POW(2, 5) "결과 확인"
+FROM DUAL;
+--==>> 32
 
 
 
