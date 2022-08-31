@@ -138,6 +138,8 @@ CREATE TABLE TBL_EXAMPLE1
 );
 --==>> Table TBL_EXAMPLE1이(가) 생성되었습니다.
 
+
+
 --○ 테이블 생성(테이블 명 : TBL_EXAMPLE2)
 CREATE TABLE TBL_EXAMPLE2
 ( NO NUMBER(4)
@@ -145,6 +147,9 @@ CREATE TABLE TBL_EXAMPLE2
 , ADDR VARCHAR2(20)
 ) TABLESPACE TBS_EDUA;
 --==> Table TBL_EXAMPLE2이(가) 생성되었습니다.
+
+
+
 
 --TBL_EXAMPLE1 과 Table TBL_EXAMPLE2
 -- 각각 어떤테이블 스페이스에 저장 되어있는지 조회
@@ -283,11 +288,12 @@ cf) MSSQL 서버의 정수 표현 타입
 
 ※ ORACLE 은 숫자 표현 타입이 한가지로 통일되어 있다. 기쁜소식><
 
-1. 숫자형  NUMBER           → -10승 38승-1 ~10의 38승
-          NUMBER(3)        → -999 ~ 999
-          NUMBER(4)        → -9999 ~ 9999
-          NUMBER(4, 1)     →   -999.1 999.1
-            전체자리 소수점이하 1
+1. 숫자형  NUMBER          →  -10승 38승-1 ~10의 38승
+          NUMBER(3)        →  -999 ~ 999
+          NUMBER(4)        →  -9999 ~ 9999
+          NUMBER(4, 1)     →  -999.1 ~ 999.1
+          
+            전체자리가 4자리고 , 소수점 이하 1까지다
 
 ※ ORACLE 의 문자 표현 타입
 
@@ -434,12 +440,14 @@ FROM EMP;
 -- 또한, 별칭 이름을 감싸는 ""도 생략이 가능하지만
 -- 『""』 를 생략할 경우 별칭 내에서 공백은 사용할 수 없다.
 -- 공백의 등장은 해당 컬럼의 표현에 대한 종결을 의미하므로
--- 별친(ALIAS)의 이름 내부에 공백을 사용해야 할 경우
+-- 별칭(ALIAS)의 이름 내부에 공백을 사용해야 할 경우
 -- 『""』를 사용하여 별칭을 부여할 수 있도록 한다.
+
+
 
 -- EMP 테이블에서 부서번호가 20번과 30번 직원들의 데이터들 중
 -- 사원번호, 사원명, 직종명, 급여, 부서번S호 항목을 조회한다.
---단, 별칭(ALIAS)을 사용한다.
+-- 단, 별칭(ALIAS)을 사용한다.
 SELECT *
 FROM EMP;
 

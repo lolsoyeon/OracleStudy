@@ -1237,7 +1237,7 @@ SELECT 'ORACLE' "COL1"
     , REVERSE('오라클')"COL3"
 FROM DUAL;
 --==>> ORACLE	ELCARO	???
--- 대상문자열을 거꾸로 반환한다.( 간, 한글은 제외 - 사용불가)
+-- 대상문자열을 거꾸로 반환한다.( 단, 한글은 제외 - 사용불가)
 
 
 -- 실습 테이블 생성 (TBL_FILES)

@@ -419,6 +419,7 @@ COMMENT ON COLUMN TBL_DEPT.DNAME IS'부서이름';
 COMMENT ON COLUMN TBL_DEPT.LOC IS'부서위치';
 
 
+
 -- 수행함 PURGE RECYCLEBIN;
 
 --○ 커멘트 데이터가 입력된 테이블의
@@ -473,7 +474,7 @@ FROM TBL_EMP;
 --○ TBL_EMP 테이블에 주민등록번호 데이터를 담을 수 있는 컬럼 추가를 원한다.
 -- 생성X 변경O ★★★★구조적 변경 → ALTER ★★★
 
---ADD는  컬럼이거나 제약조건 이거나 두가지 가능
+-- ADD는  컬럼이거나 제약조건 이거나 두가지 가능
 
 ALTER TABLE TBL_EMP 
 ADD SSN CHAR(13);
@@ -560,6 +561,8 @@ FROM DUAL;
 -- NULL 은 상태의 값을 의미하며... 실제 존재하지 않는 값이기 때문에
 -- 그 결과는 무조건 NULL 이다.
 -- 즉, 오라클에서 인지해야하는 것은 NILL이 들어가기만하면 NULL이다.
+
+
 
 --○ TBL_EMP 테이블에서 커미션(COMM ,수당)이 NULL 인 직원의
 -- 사원명, 직종명, 급여, 커미션 항목을 조회한다.
@@ -716,7 +719,7 @@ SELECT NULL"COL1", NVL(NULL,10)"COL2", NVL(5,10)"COL3"
 FROM DUAL;
 --==>>(null)	 10	5
 -- NVL() 첫 번째 파라미터 값이 NULL이면, 두 번째 파라미터 값을 반환한다.
--- NUL() 첫 번째 파라미터 값이 NILL이 아니면, 그 값을 그대로 반환한다.
+-- NUL() 첫 번째 파라미터 값이 NULL이 아니면, 그 값을 그대로 반환한다.
 
 SELECT ENAME"사원명",COMM"수당"
 FROM TBL_EMP;
@@ -808,7 +811,7 @@ FROM TBL_EMP;
 -- ○ COALESCE()
 --> 매개변수 제한이 없는 형태로 인지하고 활용한다.
 -- 맨 앞에 있는 매개변수부터 차례로 NULL인지 아닌지 확인하여
--- NULL이 아닐 경우 반환하고 바로 끝
+-- NULL이 아닐 경우 그대로 반환하고 바로 끝
 -- NULL인 경우 에는 그 다음 매개변수의 값을 반환한다.
 -- NUL() NVL2()와 비교하여
 -- 모~~~~~든 경우의 수를 고려할 수 있다는 특징을 갖는다.
@@ -1120,7 +1123,6 @@ DESC TBL_EMP;
 -- TO_DATE('1981-09-28', 'YYYY-MM-DD')이만큼 다 블럭 잡아야 비로소 날짜
 
 
---연산자가 = 들어가는게 맞는건지???? 1126번 구문 물어보깅
 SELECT ENAME"사원명", JOB"직종명", HIREDATE"입사일"
 FROM TBL_EMP
 WHERE HIREDATE = TO_DATE('1981-09-28', 'YYYY-MM-DD');
@@ -1181,20 +1183,6 @@ WHERE HIREDATE >=TO_DATE('1981-04-02', 'YYYY-MM-DD') AND TO_DATE('1981-09-28', '
 SELECT ENAME "사원명", JOB "직종명", HIREDATE "입사일"
 FROM TBL_EMP
 WHERE HIREDATE >=TO_DATE('1981-04-02', 'YYYY-MM-DD') < TO_DATE('1981-09-28', 'YYYY-MM-DD');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

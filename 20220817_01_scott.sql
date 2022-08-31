@@ -188,7 +188,7 @@ FROM DUAL;
 --==>> ORACLE	ORACLE****
 
 
--- 그냥 TRIM()트림은 없다 손톱깍이★
+-- 그냥 TRIM()도 있다 손톱깍이★
 --○ LTRIM()
 SELECT 'ORAORAORAORACLEORACLE' "COL1" --오라 오라 오라 오라클 오라클
     ,LTRIM('ORAORAORAORACLEORACLE','ORA') "COL2"

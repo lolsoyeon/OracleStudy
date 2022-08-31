@@ -143,6 +143,74 @@ WHERE JOB_ID= 'SA_MAN';
 
 SELECT *
 FROM EMPLOYEES;
+SELECT *
+FROM JOBS;
+--○ EMPLOYEES 테이블에서 JOB_TITLE 이 Sales Manager 인 사원들의
+-- SALARY 를 해당 직무(직종) 의 최고급여(MAX_SALARY)로 수정한다.
+-- 단, 입사일이 2006년 이전(해당 년도 제외) 입사자에 한해 적용할 수 있도록 처리한다.
+-- (변경에 대한 결과 확인 후 ROLLBACK 수행한다.)
+
+
+
+SELECT *
+FROM EMPLOYEES 
+WHERE JOB_TITLE = 'Sales Manager'
+  AND HIRE_DATE < '2006-01-01';
+
+
+
+SELECT *
+FROM EMPLOYEES 
+WHERE JOB_ID = (JOB_TITLE = 'Sales Manager'인 사람의 JOB_ID)
+  AND HIRE_DATE < '2006-01-01';
+
+
+SELECT *
+FROM EMPLOYEES 
+WHERE JOB_ID = (JOB_TITLE = 'Sales Manager'인 사람의 MAX_SALARY)
+  AND HIRE_DATE < '2006-01-01';
+
+
+SELECT MAX_SALARY
+FROM EMPLOYEES 
+WHERE JOB_ID = (JOB_TITLE = 'Sales Manager'인 사람의 MAX_SALARY)
+  AND HIRE_DATE < '2006-01-01';
+
+
+SELECT JOB_ID
+FROM JOBS
+WHERE JOB_TITLE = 'Sales Manager';
+--==>> SA_MAN
+SELECT MAX_SALARY
+FROM JOBS
+WHERE JOB_TITLE = 'Sales Manager';
+--==>> 20080
+
+SELECT *
+FROM EMPLOYEES 
+WHERE JOB_ID = (SELECT JOB_ID
+                FROM JOBS
+                WHERE JOB_TITLE = 'Sales Manager')
+  AND HIRE_DATE < '2006-01-01';
+
+
+-- 복습최종
+UPDATE EMPLOYEES
+SET SALARY = (SELECT MAX_SALARY
+                FROM JOBS
+                WHERE JOB_TITLE = 'Sales Manager')
+WHERE JOB_ID = (SELECT JOB_ID
+                FROM JOBS
+                WHERE JOB_TITLE = 'Sales Manager')
+  AND HIRE_DATE < '2006-01-01';
+  
+  
+  
+ROLLBACK;
+
+
+
+
 
 ------------------------------------- T 선생님 풀이
 UPDATE EMPLOYEES
@@ -150,11 +218,20 @@ SET SALARY = ('Sales Manager'의 MAX_SALARY)
 WHERE JOB_ID = ('Sales Manager'의 JOB_ID)
  AND TO_NUMBER(TO_CHAR(HIRE_DATE, 'YYYY'))<2006;
  
+
+ 
+ 
+UPDATE EMPLOYEES
+SET SALARY = ('Sales Manager'의 MAX_SALARY);
+WHERE JOB_ID = (JOB_TITLE 이 Sales Manager인 JOB_ID)
+  AND TO_NUMBER(TO_CHAR(HIRE_DATE,'YYYY')) < 2006;
+ 
  -- ('Sales Manager'의 MAX_SALARY)
 SELECT MAX_SALARY
 FROM JOBS
 WHERE JOB_TITLE = 'Sales Manager';
 --==>> 20080
+
 
 
 -- ('Sales Manager'의 JOB_ID)
@@ -351,9 +428,102 @@ WHERE DEPARTMENT_ID IN (SELECT DEPARTMENT_ID
                         WHERE DEPARTMENT_NAME IN ('Finance','Executive','Accounting') );
 --==>> 11개 행 이(가) 업데이트되었습니다. 
 
+
+
+
+
 ROLLBACK;
 --==>> 롤백 완료.
+SELECT *
+FROM DEPARTMENTS;
+------------------------------------ 복습
 
+--○ EMPLOYEES 테이블에서 SALARY 를
+-- 각 부서의 이름별로 다른 인상률을 적용하여 수정할 수 있도록 한다.
+--  Finance → 10% 인상    → SALARY *1.1
+--  Executive → 15% 인상  → SALARY * 1.15
+--  Accounting → 20% 인상  → SALARY * 1.2
+-- 다른 나머지 부서들        → SALARY
+--  (변경에 대한 결과 확인 후 BOLLBACK)
+ 
+UPDATE EMPLOYEES
+SET SALARY = CASE DEPARTMENT_ID WHEN('Finance'의 부서 아이디) 
+                               THEN SALARY *1.1 
+                               WHEN('Executive'의 부서 아이디) 
+                               THEN SALARY *1.15  
+                               WHEN('Accounting'의 부서 아이디) 
+                               THEN SALARY *1.2
+                               ELSE SALARY 
+             END;
+             
+             
+UPDATE EMPLOYEES
+SET SALARY = CASE DEPARTMENT_ID  WHEN() 
+                                THEN SALARY * 1.1
+                                WHEN ()
+                                THEN SALARY * 1.15
+                                WHEN ()
+                                THEN SALARY * 1.2
+                                ELSE SALARY 
+            AND;
+
+
+--('Finance'의 부서 아이디)
+SELECT DEPARTMENT_ID
+FROM DEPARTMENTS
+WHERE DEPARTMENT_NAME = 'Finance';
+--==>> 100
+
+--('Executive'의 부서 아이디) 
+SELECT DEPARTMENT_ID
+FROM DEPARTMENTS
+WHERE DEPARTMENT_NAME = 'Executive';
+--==>> 90
+-- ('Accounting'의 부서 아이디) 
+SELECT DEPARTMENT_ID
+FROM DEPARTMENTS
+WHERE DEPARTMENT_NAME = 'Accounting';
+--==>> 110
+
+UPDATE EMPLOYEES
+SET SALARY = CASE DEPARTMENT_ID  WHEN(SELECT DEPARTMENT_ID
+                                     FROM DEPARTMENTS
+                                     WHERE DEPARTMENT_NAME = 'Finance') 
+                                THEN SALARY * 1.1
+                                WHEN (SELECT DEPARTMENT_ID
+                                     FROM DEPARTMENTS
+                                     WHERE DEPARTMENT_NAME = 'Executive')
+                                THEN SALARY * 1.15
+                                WHEN (SELECT DEPARTMENT_ID
+                                      FROM DEPARTMENTS
+                                      WHERE DEPARTMENT_NAME = 'Accounting')
+                                THEN SALARY * 1.2
+                                ELSE SALARY 
+            AND
+WHERE 부서아이디가 (90,100,110 인것);
+
+
+UPDATE EMPLOYEES
+SET SALARY = CASE DEPARTMENT_ID  WHEN(SELECT DEPARTMENT_ID
+                                     FROM DEPARTMENTS
+                                     WHERE DEPARTMENT_NAME = 'Finance') 
+                                THEN SALARY * 1.1
+                                WHEN (SELECT DEPARTMENT_ID
+                                     FROM DEPARTMENTS
+                                     WHERE DEPARTMENT_NAME = 'Executive')
+                                THEN SALARY * 1.15
+                                WHEN (SELECT DEPARTMENT_ID
+                                      FROM DEPARTMENTS
+                                      WHERE DEPARTMENT_NAME = 'Accounting')
+                                THEN SALARY * 1.2
+                                ELSE SALARY 
+            END
+WHERE DEPARTMENT_ID IN (SELECT DEPARTMENT_ID
+                       FROM DEPARTMENTS
+                       WHERE DEPARTMENT_NAME IN ('Accounting', 'Executive','Finance') );
+--==>> 11개 행 이(가) 업데이트되었습니다.
+
+ROLLBACK;
 --------------------------------------------------------------------------------
 
 --■■■ DELETE ■■■--
@@ -637,7 +807,8 @@ WHERE E.DEPARTMENT_ID = D.DEPARTMENT_ID
 */
 
 
--- PL SQL
+-- PL SQL 넘어감
+
 
 
 
