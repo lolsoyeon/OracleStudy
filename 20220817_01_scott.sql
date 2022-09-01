@@ -833,7 +833,7 @@ FROM DUAL;
 --==>>      2022
 --> 조회 결과가 좌측 정렬인지 우측 정렬인지 확인~!!!
 
---○ EXTRACT()
+--○ EXTRACT()  → 문자 타입으로
 SELECT TO_CHAR(SYSDATE, 'YYYY') "COL1"   -- 2022(문자형)  → 연도를 추출하여 문자 타입으로
     , TO_CHAR(SYSDATE, 'MM') "COL2"      -- 08(문자형)    → 월을 추출하여 문자타입으로
     , TO_CHAR(SYSDATE, 'DD') "COL3"      -- 17(문자형)    → 일을 추출하여 문자타입으로

@@ -635,8 +635,7 @@ WHERE BASICPAY + SUDANG > 2500000;
 허경운	2650000	150000	2800000
 이미경	2520000	160000	2680000
 */
-SELECT *
-FROM TBL_INSA
+
 --14. 주민번호를 기준으로 남자(성별 자릿수가 1, 3)만 조회. 
     ( 이름(NAME), 주민번호(SSN) )
     단, SUBSTR() 함수 이용.
@@ -677,9 +676,24 @@ WHERE SUBSTR(SSN,8,1) IN (1,3);
 전용재	800605-1456987
 김신제	800709-1321456
 */
-
+SELECT *
+FROM TBL_INSA
 15. 주민번호를 기준으로 80년대 태어난 사람만 조회. 
     ( 이름(NAME), 주민번호(SSN) )
+/*
+76 + 1900 = 1976
+80 + 1900
+*/
+
+
+SELECT CASE SUBSTR(SSN, 1, 2) WHEN THEN ELSE END
+FROM TBL_INSA
+-- 80 81 82 TRUNC(SSN, -1) = 80;
+
+
+SELECT NAME"이름", SSN"주민번호"
+FROM TBL_INSA    
+WHERE TRUNC(SSN, -1) = 80 ;
 
 16. 서울 사람 중에서 70년대 태어난 사람만 조회.
 

@@ -176,6 +176,7 @@ SELECT SANO "사원번호"
         AND 근무일수>2000 SAL*0.5 "보너스"
 FROM TBL_SAWOM;
 
+
 SELECT SANO "사원번호"
        SANAME "사원명"
        JUBUN "주민번호"
@@ -206,6 +207,7 @@ SELECT SANO "사원번호"
               ELSE '몰라'
     END "보너스"
 FROM TBL_SAWON;
+
 
 
 SELECT SANO "사원번호"
@@ -258,6 +260,8 @@ SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호"
 FROM TBL_SAWON;
 
 
+
+
 SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호" 
     -- 성별
     , CASE WHEN SUBSTR(JUBUN ,7,1) IN ('1','3') THEN '남성' 
@@ -271,6 +275,8 @@ SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호"
             ELSE -1
             END "현재나이"  
 FROM TBL_SAWON;
+
+
 
 
 SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호" 
@@ -288,6 +294,8 @@ SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호"
             ELSE -1
             END "현재나이"  
 FROM TBL_SAWON;
+
+
 
 SELECT SANO "사원번호",SANAME "사원명" ,JUBUN "주민번호" 
     -- 성별

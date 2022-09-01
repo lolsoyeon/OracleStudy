@@ -21,7 +21,6 @@ DECLARE
     V_NUM   TBL_INSA.NUM%TYPE := 1001;
 
 BEGIN
-
     LOOP
         -- Á¶È¸
         SELECT NAME, TEL, BUSEO
@@ -36,9 +35,7 @@ BEGIN
         V_NUM := V_NUM + 1;
         
         EXIT WHEN V_NUM > 1060;
-        
     END LOOP;
-
 END;
 
 
