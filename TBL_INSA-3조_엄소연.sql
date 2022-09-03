@@ -839,11 +839,21 @@ WHERE EXTRACT(YEAR FROM IBSADATE)>=2000;
 김신애	서울	2001/10/10
 */
 
-20. 2000년 10월에 입사한 사람 조회. (이름, 출신도, 입사일).
-SELECT *
-FROM TBL_INSA
-WHERE TO_CHAR(EXTRACT(YEAR FROM IBSADATE)) || TO_CHAR(EXTRACT(MONTHS FROM IBSADATE)) > TO_DATE('2000-10','YYYY-MM');
+-- 20. 2000년 10월에 입사한 사람 조회. (이름, 출신도, 입사일).
+--SELECT *
+--FROM TBL_INSA
+--WHERE TO_DATE(EXTRACT(YEAR FROM IBSADATE)) || TO_DATE(EXTRACT(MONTHS FROM IBSADATE)) > TO_DATE('2000-10','YYYY-MM');
 
+SELECT NAME"이름", CITY"출신도", IBSADATE"입사일"
+FROM TBL_INSA
+WHERE SUBSTR(IBSADATE,1, 4) = '2000'
+  AND SUBSTR(IBSADATE,6, 2) = '10';
+  /*
+김정훈	전북	2000-10-01
+우재옥	서울	2000-10-01
+김영길	서울	2000-10-18
+권옥경	경기	2000-10-10
+  */
 21. 주민번호를 기준으로 직원의 나이 조회.
     단, 모든 직원이 1900년대에 태어났다는 가정. (이름, 주민번호, 나이)
 
