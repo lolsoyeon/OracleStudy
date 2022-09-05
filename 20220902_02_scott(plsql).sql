@@ -647,7 +647,7 @@ END;
 --    작업 영역에서  SQL 문을 실행하고 그 과정에서 발생한 데이터를
 --    저장하기 위해 커서(CURSOR)를 사용하며,
 --    커서에는 암시적인 커서와 명시적인 커서가 있다.
-                            -- 여러레코드
+                            -- 여러 레코드 시
 
 
 -- 2. 암시적 커서는 모든 SQL 문에 존재하며
@@ -655,7 +655,9 @@ END;
 --    그러나 SQL 문을 실행한 결과물(RESULT SET)이
 --    여러행(ROW)으로 구성된 경우
 --    커서(CORSOR)를 명시적으로 선언해야 여러 행(ROW)을 다룰 수 있다.
+
 SET SERVEROUTPUT ON;
+
 --○ 커서 이용 전 상황(단일 행 접근시)
 DECLARE
     V_NAME TBL_INSA.NAME%TYPE;
@@ -766,6 +768,7 @@ END;
 */
 
 /*
+오라클에서 중요한 패턴★(선언)
 변수명 데이터타입
 V_REAULT NUMBER;
 USER_DEFINE_ERROR EXCEPTION;
@@ -781,6 +784,7 @@ CREATE TABLE 테이블명
         INDEX 인덱스명
         FUNCTION 함수명
         PROCEDURE 프로시저명
+        CURSOR 커서명 
 
 */
 
@@ -817,22 +821,13 @@ BEGIN
         -- 출력
         DBMS_OUTPUT.PUT_LINE(V_NAME || ' - ' || V_TEL);
         
-        
     END LOOP;
             
-    -- 커서 클로즈   자바랑 연결시엔 클로즈 안함 스크림처리 때문에 
+    -- 커서 클로즈   자바랑 연결시엔 클로즈 안함 스트림처리 때문에 
     CLOSE CUR_INSA_SELECT;
     
 END;
 --==>> 같은 결과 
-
-
-
-
-
-
-
-
 
 
 
