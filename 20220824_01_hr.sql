@@ -46,17 +46,17 @@
 
 --■■■ PRIMARY KEY ■■■--
 
---1. 테이블에 대한 기본 키를 생성한다.
+-- 1. 테이블에 대한 기본 키를 생성한다.
 
-                                        -- 싱글 ,  복합  
---2. 테이블에서 각 행을 유일하게 식별하는 컬럼 또는 컬럼의 집합이다.
+                                      -- 싱글 ,      복합  
+-- 2. 테이블에서 각 행을 유일하게 식별하는 컬럼 또는 컬럼의 집합이다.
 --  기본키는 테이블 당 최대 하나만 존재한다.
 --  그러나 반드시 하나의 컬럼으로만 구성되는 것은 아니다.
 --  NULL일 수 없고, 이미 테이블에 존재하고 있는 데이터를
 --  다시 입력할 수 없도록 처리한다. (유일성)
 --  UNIQUE INDEX 가 오라클 내부적으로 자동으로 생성된다.
 
---3. 형식 및 구조
+-- 3. 형식 및 구조
 -- ① 컬럼 레벨의 형식
 -- 컬럼명 데이터타입[CONSTRAINT CONSTRAINT명] PRIMARY KEY[(컬럼명,..)]
 
@@ -72,8 +72,8 @@
 
 
 --○ PK지정 실습 (① 컬럼 레벨의 형식)
---테이블생성
 
+-- 테이블생성
 CREATE TABLE TBL_TEST1
 ( COL1  NUMBER(5)       PRIMARY KEY
 , COL2  VARCHAR2(30)
@@ -285,7 +285,7 @@ CREATE TABLE TBL_TEST2
 );
 --==>> Table TBL_TEST2이(가) 생성되었습니다.
 
---ㅁ 데이터 입력
+--○ 데이터 입력
 INSERT INTO TBL_TEST2(COL1,COL2) VALUES (1,'TEST');
 INSERT INTO TBL_TEST2(COL1,COL2) VALUES (1,'TEST');  --> 에러발생
 INSERT INTO TBL_TEST2(COL1,COL2) VALUES (1,'ABCD');  --> 에러발생
@@ -388,7 +388,7 @@ CREATE TABLE TBL_TEST4
 
 --※ 이미 생성된(만들어져 있는)테이블에
 --   부여하려는 제약조건을 위반한 데이터가 (단 하나라도)포함되어 있을 경우
---   해당 테이블에 제액조건을 추가하는 것은 불가능하다.
+--   해당 테이블에 제약조건을 추가하는 것은 불가능하다.
 
 -- 제약조건 추가  -- 구조적인 변경
 ALTER TABLE TBL_TEST4
@@ -798,7 +798,7 @@ COMMIT;
 -- ② 테이블 레벨의 형식
 -- 컬럼명 데이터타입,
 -- 컬럼명 데이터타입,
---CONSTRAINT CONSTRAINT명 FOREIGN KEY(컬럼명)
+-- CONSTRAINT CONSTRAINT명 FOREIGN KEY(컬럼명)
 --           REFERENCES 참조테이블명(참조컬럼명)
 --           [ON DELETE CASCADE | ON DELETE SET NULL] → 추가옵션
 
@@ -909,7 +909,7 @@ CREATE TABLE TBL_EMP2
 );
 
 
---○ FK 지정 실습(② 테이블 생성후 제약조건 추가)
+--○ FK 지정 실습(③ 테이블 생성후 제약조건 추가)
 CREATE TABLE TBL_EMP3
 ( SID   NUMBER
 , NAME  VARCHAR2(30)
@@ -918,7 +918,7 @@ CREATE TABLE TBL_EMP3
 --==>> Table TBL_EMP3이(가) 생성되었습니다.
 
 
--- 제약조건추가
+-- 제약조건 추가
 ALTER TABLE TBL_EMP3
 ADD( CONSTRAINT EMP3_SID_PK  PRIMARY KEY(SID)
    , CONSTRAINT EMP3_JIKWI_ID_FK FOREIGN KEY(JIKWI_ID)
@@ -1203,4 +1203,17 @@ DROP TABLE TBL_EMP1;
 
 DROP TABLE TBL_JOBS;
 --==>> Table TBL_JOBS이(가) 삭제되었습니다.
+
+--------------------------------------------------------------------------------
+ -- between ~ and ~ 이 LIKE 보다 데이터 소모가 적다.
+SELECT *
+FROM TBL_INSA
+WHERE ILJA LIKE '2022%'
+AND SANGPUM = B;
+
+SELECT *
+FROM ILJA BETWEEN '202201' AND '202212'
+AND SANGPUM = B;
+
+
 
