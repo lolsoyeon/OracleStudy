@@ -126,7 +126,7 @@ BEGIN
         THEN RAISE MID_DROP_STU_ERROR;
     END IF;
     
-    -- ③과목 진행 중간에 성적 입력 불가 
+    -- 과목 진행 중간에 성적 입력 불가 
     -- 끝나는 날짜보다 이르면 입력 불가
     SELECT OS_END INTO V_OS_END
     FROM OPENED_SUBJECT
@@ -136,7 +136,7 @@ BEGIN
         THEN RAISE GRADE_DATE_ERROR;
     END IF;
     --GRADE_CODE + 시퀀스 번호 표기 
-    V_GRADE_CODE := 'S'||TO_CHAR(SYSDATE,'YY');
+    V_GRADE_CODE := 'G'||TO_CHAR(SYSDATE,'YY');
     
     -- 성적테이블에 INSERT
     INSERT INTO GRADE(GRADE_CODE, OS_CODE, GRADE_ATT, GRADE_WT, GRADE_PT, APP_CODE)
@@ -230,7 +230,64 @@ FROM VIEW_SUBJECT;
 
 
 
+--■■■ 배점 부여 PRC_SCORE_POINT ■■■--
+CREATE OR REPLACE PROCEDURE PRC_SCORE_POINT
+(
+     V_OS_CODE   IN OPENED_SUBJECT.OS_CODE%TYPE
+    ,V_OS_WT            IN OPENED_SUBJECT.OS_WT%TYPE     -- 필기배점
+    ,V_OS_PT            IN OPENED_SUBJECT.OS_PT%TYPE    -- 실기배점
+    ,V_OS_ATT           IN OPENED_SUBJECT.OS_ATT%TYPE    -- 출결배점
+)
+IS
+BEGIN
+    UPDATE OPENED_SUBJECT
+    SET OS_WT = V_OS_WT, OS_PT = V_OS_PT, OS_ATT = V_OS_ATT
+    WHERE OS_CODE = V_OS_CODE;
+END;
+--==>> Procedure PRC_SCORE_POINT이(가) 컴파일되었습니다.
 
 
+--■■■ 수강과목 총점 함수 TOTAL_SCORE ■■■--
 
+CREATE OR REPLACE FUNCTION TOTAL_SCORE
+(
+    --성적 GRADE,  개설과목(배점) OPENED_SUBJECT 호출
+    V_GRADE_CODE   IN GRADE.GRADE_CODE%TYPE
+   ,V_OS_CODE       IN OPENED_SUBJECT.OS_CODE%TYPE
+)
+    -- 숫자값을 리턴
+    RETURN NUMBER
+IS
+    -- 주요 변수 선언
+    RESULT NUMBER;
+    
+    V_P_POINT OS.PT%TYPE;
+    V_W_POINT OS.WT%TYPE;
+    V_A_POINT OS.ATT%TYPE;
+    
+    V_P_GRADE GRADE.GRADE.PT%TYPE;
+    V_W_GRADE GRADE.GRADE.WT%TYPE;
+    V_A_GRADE GRADE.GRADE.ATT%TYPE;
+    
+BEGIN
+    -- 배점 받아오기 30
+    -- NULL일 경우 0으로 치환
+    SELECT NVL(OS.PT,0), NVL(OS.WT,0), NVL(OS.ATT,0) INTO V_P_POINT, V_W_POINT, V_A_POINT
+    FROM OPENED_SUBJECT
+    WHERE OS_CODE = V_OS_CODE;
+    
+    -- 점수 받아오기 100
+    -- NULL일 경우 0으로 치환    
+    SELECT NVL(GRADE.PT,0), NVL(GRADE.WT,0), NVL(GRADE.ATT,0) INTO V_P_GRADE, V_W_GRADE, V_A_GRADE
+    FROM GRADE
+    WHERE GRADE_CODE = V_GRADE_CODE;
 
+    -- (30 * 100 + 20 * 90 + 50 * 80)/100  3000 + 1800 + 4000 = 8800/100
+    -- 30 * 0.01 = 0.3 /* 98 => 29.4  / 40 * 0.01 = 0.4/ * 56 = 22.4  / 30 * 0.01 = 0.3 /* 44 = 13.2 
+    -- 29.4 + 22.4 + 13.2 = 65
+    -- (V_P_POINT * 0.01 * V_P_SCORE) +(V_W_POINT* 0.01 * V_W_SCORE) + (V_A_POINT* 0.01 *V_A_SCORE);
+    RESULT := (V_P_POINT*V_P_SCORE + V_W_POINT*V_W_SCORE + V_A_POINT*V_A_SCORE)/100;
+
+    -- 최종 결과 반환
+    RETURN RESULT;
+END;
