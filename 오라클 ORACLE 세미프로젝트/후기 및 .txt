@@ -1,0 +1,225 @@
+
+태민 
+
+
+배점부여 프로시져
+저는 지금 과정부분 INSERT UPDATE DELETE TRIGGER 만들고 있어요 개설과정쪽은 그대로구요.... ;
+  현성 : 학생 INSERT, UPDATE(이름), DELETE TRIGGER, 학생 관리 기능 뷰?성적 출력 기능 뷰?
+ ERD 수정했고, SQL 쿼리문작성 에로사항, 후기 및 총평 최대한 자세히   
+
+
+
+-- 1. 성적입력 시 GR || 10001부터 생성되는 시퀀스 먼저 생성
+
+CREATE SEQUENCE SEQ_GRADE
+START WITH 10001
+INCREMENT BY 1
+NOMAXVALUE
+NOCACHE;  
+
+
+
+
+-- 1. 성적 입력 PRC_GRADE_INSERT(출결, 필기, 실기, 개설과목코드, 수강신청코드) 작동확인
+-- EXEC PRC_GRADE_INSERT(출결, 필기, 실기, 개설과목코드, 수강신청코드);
+CREATE OR REPLACE PROCEDURE PRC_GRADE_INSERT
+( V_GRADE_ATT           IN GRADE.GRADE_ATT%TYPE
+, V_GRADE_WT            IN GRADE.GRADE_WT%TYPE
+, V_GRADE_PT            IN GRADE.GRADE_PT%TYPE
+, V_OS_CODE             IN GRADE.OS_CODE%TYPE 
+, V_APP_CODE            IN GRADE.APP_CODE%TYPE
+)
+IS
+    V_GRADE_CODE    GRADE.GRADE_CODE%TYPE;
+    V_GRADE_DATE    GRADE.GRADE_DATE%TYPE := SYSDATE;
+    
+
+    V_OS_END            OPENED_SUBJECT.OS_END%TYPE;          -- 개설과목 종료일       
+    V_FAPP_ID           GRADE.APP_CODE%TYPE;                -- 수강신청코드 중복검사   
+    V_FOP_SUB           GRADE.OS_CODE%TYPE;                 -- 개설과목코드 중복검사
+    V_MID_DROP          NUMBER;                            -- 중도포기 
+    
+    
+    MID_DROP_STU_ERROR EXCEPTION;                   -- 중도포기에러  
+    APP_OVERLAP_ERROR EXCEPTION;                    -- 수강신청코드 중복시 에러 
+    GRADE_DATE_ERROR   EXCEPTION;                   -- 개설과목 진행중에 성적입력X 에러
+
+    CURSOR CUR_CHECK_APP
+    IS 
+    SELECT APP_CODE, OS_CODE
+    FROM GRADE
+    WHERE APP_CODE = V_APP_CODE; 
+    
+BEGIN
+
+    V_GRADE_CODE :=('GR'||TO_CHAR(SEQ_GRADE.NEXTVAL));
+    
+    
+    OPEN CUR_CHECK_APP;
+        LOOP
+        FETCH CUR_CHECK_APP INTO V_FAPP_ID, V_FOP_SUB;
+        EXIT WHEN CUR_CHECK_APP%NOTFOUND;
+        
+        IF (V_OS_CODE = V_FOP_SUB AND  V_APP_CODE = V_FAPP_ID)
+        THEN RAISE APP_OVERLAP_ERROR;
+        END IF;
+        END LOOP;
+    CLOSE CUR_CHECK_APP;
+    
+    SELECT COUNT(*) INTO V_MID_DROP
+    FROM QUITLIST
+    WHERE APP_CODE = V_APP_CODE;
+    
+    IF (V_MID_DROP > 0)
+        THEN RAISE MID_DROP_STU_ERROR;
+    END IF;
+    
+    -- 과목 진행 중간에 성적 입력 불가 
+    -- 끝나는 날짜보다 이르면 입력 불가
+    SELECT OS_END INTO V_OS_END
+    FROM OPENED_SUBJECT
+    WHERE OS_CODE =  V_OS_CODE;
+
+    IF (V_OS_END > SYSDATE)
+        THEN RAISE GRADE_DATE_ERROR;
+    END IF;
+
+    INSERT INTO GRADE(GRADE_CODE, GRADE_DATE, GRADE_ATT, GRADE_WT, GRADE_PT, OS_CODE, APP_CODE)
+    VALUES(V_GRADE_CODE, V_GRADE_DATE, V_GRADE_ATT, V_GRADE_WT, V_GRADE_PT, V_OS_CODE, V_APP_CODE);
+
+    COMMIT;
+    
+    
+    -- 예외처리
+    EXCEPTION
+        WHEN MID_DROP_STU_ERROR 
+            THEN RAISE_APPLICATION_ERROR(-20601, '중도포기한 수업입니다.');
+                ROLLBACK;
+        WHEN APP_OVERLAP_ERROR
+            THEN RAISE_APPLICATION_ERROR(-20602, '이미 성적이 등록된 학생입니다');
+                ROLLBACK;
+        WHEN GRADE_DATE_ERROR
+            THEN RAISE_APPLICATION_ERROR(-20603, '성적입력기간이 아닙니다');
+                ROLLBACK;
+
+         WHEN OTHERS
+            THEN ROLLBACK;
+    
+END;
+
+--==>> Procedure PRC_GRADE_INSERT이(가) 컴파일되었습니다.
+
+
+
+-- 2. 성적 수정 PRC_SCORE_UPDATE(성적코드, 출결, 필기, 실기)  작동확인
+-- EXEC PRC_SCORE_UPDATE(성적코드, 출결, 필기, 실기); 
+CREATE OR REPLACE PROCEDURE PRC_GRADE_UPDATE
+( V_GRADE_CODE      IN GRADE.GRADE_CODE%TYPE
+, V_GRADE_ATT       IN GRADE.GRADE_ATT%TYPE
+, V_GRADE_WT        IN GRADE.GRADE_WT%TYPE
+, V_GRADE_PT        IN GRADE.GRADE_PT%TYPE
+)
+IS
+BEGIN
+    -- 출결, 필기, 실기 업데이트
+    UPDATE GRADE
+    SET GRADE_ATT = V_GRADE_ATT, GRADE_WT = V_GRADE_WT, GRADE_PT = V_GRADE_PT
+    WHERE GRADE_CODE = V_GRADE_CODE;
+END;
+--==>> Procedure PRC_GRADE_UPDATE이(가) 컴파일되었습니다.
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------
+-- 3. 성적 삭제 PRC_GRADE_DELETE(성적 코드) -- 작동확인
+CREATE OR REPLACE PROCEDURE PRC_GRADE_DELETE
+(
+    V_GRADE_CODE    IN GRADE.GRADE_CODE%TYPE
+)
+IS
+    NOTEXIST_ERROR EXCEPTION;
+BEGIN
+    DELETE
+    FROM GRADE
+    WHERE GRADE_CODE = V_GRADE_CODE;
+    
+    -- 결과 집합의 결과 ROW 수가 0이면 TRUE, 아니면 FALSE를 반환
+    -- 조회 결과 수가 0일 경우엔 에러 발생
+    IF SQL%NOTFOUND
+    THEN RAISE NOTEXIST_ERROR;
+    END IF;
+    
+    COMMIT;
+    
+    EXCEPTION 
+        WHEN NOTEXIST_ERROR
+            THEN RAISE_APPLICATION_ERROR(-20605,'일치하는 데이터가 없습니다.');
+                ROLLBACK;
+        WHEN OTHERS
+            THEN ROLLBACK;    
+END;
+--==>> Procedure PRC_GRADE_DELETE이(가) 컴파일되었습니다.
+
+
+중도탈락처리 
+논리적으로 에러나는것들 처리
+
+
+
+
+교재, 관리자, 강의실
+
+
+
+
+ 
+ 요구분석서 파악하는데 오랜시간이 걸렸고 까다로워보였다.
+요구분석서를 보고 도대체 어떤 테이블과 컬럼이 필요한지 몰라서
+감이 안 잡혔지만 ERDCloud 를 통해 작성해 보면서 점점 감이 잡혔다.
+
+ 하지만 테이블간의 식별관계, 비식별관계를 파악해서 연결짓기는 쉽지 않아서 검색을 많이했다.
+정규화 전엔 테이블의 수가 약 6개 정도였지만 정규화를 수행하고 테이블의 갯수는 13개까지 늘어난게 새삼 신기하였다.
+13개의 테이블사이의 관계가 ERD를 직접 작성 함으로써 파악이되었다.
+모르는게 있으면 혼자 해결하려고 노력하고, 혼자 못하면 팀원들한테 바로바로 물어보며 도움을 받을 수 있어서 좋았다. 
+모른채로 넘어하고 아는척 하며 넘어가는것보단 내가 질문함으로 인해서 질문을 회의주제로 삼아 중요한 내용을 팀원들도 
+확실히 알게된다면 그보다 좋은것은 없기 때문이다.
+하지만 너무 쓸데없는 질문이나 효율성이 떨어지는 질문을 시간을 위해서 삼가야한다고 느꼈다.
+
+ ERD작성은 굉장히 중요한 작업이라 ERD를 작성을 하고나면 
+퀴리문은 수업시간에 그냥 배운대로 적용하면 쉬울것이라고 예상했다. 
+하지만 요구 분석서 대로 알맞은 결과 도출하는것이 너무 어려웠고 
+결과를 도출하기 위해 함수, 프로시저, 뷰 를 아주 세세하게 쪼개는 것이 맞는지
+효율성있게 프로시저 안에 넣기도하고 프로시저의 기능을 좋게 합쳐야하는지 파악하기가 어려웠다.
+자바보다 쉽다고 생각했지만 생각보다 요구분석서 대로 결과를 내기란 자유자재로 되지않았다.
+
+프로시저를 만들고 테스트를 하는데 팀원들과 상의를 해도 프로시저에 틀린 부분이 없는데 프로시저가 작동이 안했다.
+결국 팀원중 한 명이 프로시저 테스트를 성공해줘서 프로시저엔 이상이 없는걸 파악하고 다른 문제를 찾았다
+이건 나의 바보같은 실수였는데 공용 계정에서 프로시저를 생성하고 테스트는 다른(개인)개정에서 했기 때문이었다.
+이 실수로 미루어보았을때 오라클은 그동안 생소했던 계정이 존재하고 계정도 잘 파악해야한다는걸 느꼈다.
+테스트 해 준 팀원이 아니었으면 문제를 해결하는데 더욱 오랜시간이 걸렸을것 같고
+이 실수로 인해서 테스트의 중요성을 깨달았다.
+프로시저가 컴파일 된다고 하더라도 테스트를 해서 통과되지 못하면 
+제자리로 돌아와 다시 수정해야하는 작업을 성공 할 때까지 반복해야 하기 때문이다.
+
+ 요구분석서를 파악이 어려운만큼 팀원들과 회의하면서 팀원들의 생각이 도움이 된것이 많았다.
+부모-자식인 경우가 다수이기 때문에 처음엔 ERD 작성할 때는 부모냐 자식이냐의 회의를 많이 하다가 
+프로젝트 막바지에서는 결과 도출하느라 바빴다.
+ERD작성이 완료됐기 때문에 결과만 내면되는데 세세한 요구는 아직까지는 정말 감당이 되지않았다.
+하지만 프로젝트를 할 때 마다 배우고 팀원들의 소중함을 알기 때문에 배울 수 있어서 좋았다.
+이론은 쉽고 실습은 너무 어렵다는것을 또 다시 느꼈다.
+
+
+
+
+
+
+
+
+
+
+
