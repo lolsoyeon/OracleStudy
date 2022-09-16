@@ -1,0 +1,152 @@
+1) PK는 NULL을 허용하지만 UNIQUE 는 NULL 을 허용한다. 
+단, NULL끼리도 중복 될 수 없어 딱하나의 NULL만 존재할 수 있다.
+2) UNIQUE와 NOT NULL 울 동시에 지정하면 PK와 유사해진다.
+그러나 PK는 테이블당 하나만 지정할 수 있지만 UNIQUE 는 개수에 상관없이 얼마든지 지정할 수 있다.
+
+
+
+ JOBS 테이블의 	    JOB_ID       PK 부모
+ EMPLOYEES 테이블의 JOB_ID       FK 자식
+
+ COUNTRIES 테이블의 COUNTRY_ID    PK 부모 
+ LOCATION 테이블의  COUNTRY_ID    FK 자식
+
+
+
+
+
+
+
+
+
+
+
+COUNTRIES3
+
+
+COUNTRY_ID	CHAR(2 BYTE)	No			1	Primary key of countries table.
+COUNTRY_NAME	VARCHAR2(40 BYTE)	Yes		2	Country name
+REGION_ID	NUMBER	Yes				3	Region ID for the country. Foreign key to region_id column in the departments table.
+
+
+DEPARTMENTS3
+
+DEPARTMENT_ID	NUMBER(4,0)	No			1	Primary key column of departments table.
+DEPARTMENT_NAME	VARCHAR2(30 BYTE)	No		2	"A not null column that shows name of a department. Administration,
+Marketing, Purchasing, Human Resources, Shipping, IT, Executive, Public Relations, Sales, Finance, and Accounting. "
+MANAGER_ID	NUMBER(6,0)	Yes			3	Manager_id of a department. Foreign key to employee_id column of employees table. The manager_id column of the employee table references this column.
+LOCATION_ID	NUMBER(4,0)	Yes			4	Location id where a department is located. Foreign key to location_id column of locations table.
+
+
+
+
+EMPLOYEES3
+
+
+EMPLOYEE_ID	NUMBER(6,0)		No		1	Primary key of employees table.
+FIRST_NAME	VARCHAR2(20 BYTE)	Yes		2	First name of the employee. A not null column.
+LAST_NAME	VARCHAR2(25 BYTE)	No		3	Last name of the employee. A not null column.
+EMAIL		VARCHAR2(25 BYTE)	No		4	Email id of the employee
+PHONE_NUMBER	VARCHAR2(20 BYTE)	Yes		5	Phone number of the employee; includes country code and area code
+HIRE_DATE	DATE			No		6	Date when the employee started on this job. A not null column.
+JOB_ID		VARCHAR2(10 BYTE)	No		7	"Current job of the employee; foreign key to job_id column of the jobs table. A not null column."
+SALARY		NUMBER(8,2)		Yes		8	"Monthly salary of the employee. Must be greater than zero (enforced by constraint emp_salary_min)"
+COMMISSION_PCT	NUMBER(2,2)		Yes		9	"Commission percentage of the employee; Only employees in sales department elgible for commission percentage"
+MANAGER_ID	NUMBER(6,0)	Yes		10	"Manager id of the employee; has same domain as manager_id indepartments table. Foreign key to employee_id column of employees table.(useful for reflexive joins and CONNECT BY query)"
+DEPARTMENT_ID	NUMBER(4,0)	Yes		11	"Department id where employee works; foreign key to department_id column of the departments table"
+
+
+LOCATION3
+
+LOCATION_ID	NUMBER(4,0)		No		1	Primary key of locations table
+STREET_ADDRESS	VARCHAR2(40 BYTE)	Yes		2	"Street address of an office, warehouse, or production site of a company.Contains building number and street name"
+POSTAL_CODE	VARCHAR2(12 BYTE)	Yes		3	"Postal code of the location of an office, warehouse, or production site of a company. "
+CITY		VARCHAR2(30 BYTE)	No		4	"A not null column that shows city where an office, warehouse, or production site of a company is located. "
+STATE_PROVINCE	VARCHAR2(25 BYTE)	Yes		5	"State or Province where an office, warehouse, or production site of acompany is located."
+COUNTRY_ID	CHAR(2 BYTE)		Yes		6	"Country where an office, warehouse, or production site of a company is located. Foreign key to country_id column of the countries table."
+
+
+COUNTRIES 테이블의 COUNTRY_ID 가 PK 따라서 부모 테이블이다
+
+★ PK									★C(NOT NULL)				★ FK:R
+LOCATION_ID STREET_ADDRESS				POSTAL_CODE	CITY		STATE_PROVINCE		COUNTRY_ID
+1000	    1297 Via Cola di Rie			00989		Roma		(null)			IT
+1100	    93091 Calle della Testa			10934		Venice		(null)			IT
+1200	    2017 Shinjuku-ku				1689		Tokyo		Tokyo Prefecture	JP
+1300	    9450 Kamiya-cho				6823		Hiroshima	(null)			JP
+1400	    2014 Jabberwocky Rd				26192		Southlake	Texas			US
+1500	    2011 Interiors Blvd				99236		South San Francisco	California	US
+1600	    2007 Zagora St				50090		South Brunswick	New Jersey		US
+1700	    2004 Charade Rd				98199		Seattle		Washington		US
+1800	    147 Spadina Ave				M5V 2L7		Toronto		Ontario			CA
+1900	    6092 Boxwood St				YSW 9T2		Whitehorse	Yukon			CA
+2000	    40-5-12 Laogianggen				190518		Beijing		(null)			CN
+2100	    1298 Vileparle (E)				490231		Bombay		Maharashtra		IN
+2200	    12-98 Victoria Street			2901		Sydney		New South Wales		AU
+2300	    198 Clementi North				540198		Singapore	(null)			SG
+2400	    8204 Arthur St				(null)		London		(null)			UK
+2500	    Magdalen Centre, The Oxford Science Park	OX9 9ZB		Oxford		Oxford			UK
+2600	    9702 Chester Road				09629850293	Stretford	Manchester		UK
+2700	    Schwanthalerstr. 7031			80925		Munich		Bavaria			DE
+2800	    Rua Frei Caneca 1360 			01307-002	Sao Paulo	Sao Paulo		BR
+2900	    20 Rue des Corps-Saints			1730		Geneva		Geneve			CH
+3000	    Murtenstrasse 921				3095		Bern		BE			CH
+3100	    Pieter Breughelstraat 837			3029SK		Utrecht		Utrecht			NL
+3200	    Mariano Escobedo 9991			11932		Mexico City	Distrito Federal,	MX
+
+
+
+
+
+
+
+--○ FK 지정 실습(② 테이블 레벨의 형식)
+CREATE TABLE TBL_EMP2
+( SID       NUMBER
+, NAME      VARCHAR2(30)
+, JIKWI_ID  NUMBER
+, CONSTRAINT EMP2_SID_PK PRIMARY KEY(SID)
+, CONSTRAINT EMP2_JIKWI_ID_FK FOREIGN KEY(JIKWI_ID)
+             REFERENCES TBL_JOBS(JIKWI_ID)
+);
+
+
+CREATE TABLE LOCATIONS3
+( LOCATION_ID      NUMBER(4)
+, STREET_ADDRESS   VARCHAR2(40)
+, POSTAL_CODE      VARCHAR2(12)
+, CITY            VARCHAR2(30) CONSTRAINT LOC3_LOC_CITY_NN NOT NULL
+, STATE_PROVINCE   VARCHAR2(25)
+, COUNTRY_ID       CHAR(2)
+, CONSTRAINT LOCATIONS3_LOC_ID_PK PRIMARY KEY (LOCATION_ID)
+, CONSTRAINT LOCATIONS3_LOC_C_ID_FK FOREIGN KEY (COUNTRY_ID)
+             REFERENCES COUNTRIES3(COUNTRY_ID) );
+
+CREATE TABLE EMPLOYEES3
+( EMPLOYEE_ID NUMBER(6)
+, FIRST_NAME VARCHAR2(20)
+, LAST_NAME 	VARCHAR2(25) CONSTRAINT EMP3_EMP_LAST_NAME_NN NOT NULL ENABLE
+, EMAIL 	VARCHAR2(25) CONSTRAINT EMP3_EMP_EMAIL_NN NOT NULL ENABLE
+, PHONE_NUMBER VARCHAR2(20)
+, HIRE_DATE 	DATE 		CONSTRAINT EMP3_EMP_HIRE_DATE_NN NOT NULL ENABLE
+, JOB_ID 	VARCHAR2(10) CONSTRAINT EMP3_EMP_JOB_NN NOT NULL ENABLE
+, SALARY 	NUMBER(8,2)
+, COMMISSION_PCT NUMBER(2,2)
+, MANAGER_ID  	NUMBER(6,0)
+, DEPARTMENT_ID NUMBER(4,0)
+, CONSTRAINT EMP3_EMP_SALARY_MIN CHECK (salary > 0)
+, CONSTRAINT EMP3_EMP_EMAIL_UK UNIQUE (EMAIL)
+, CONSTRAINT EMP3_EMP_EMP_ID_PK PRIMARY KEY (EMPLOYEE_ID)
+, CONSTRAINT EMP3_EMP_DEPT_FK FOREIGN KEY (DEPARTMENT_ID)
+	     REFERENCES DEPARTMENTS (DEPARTMENT_ID)
+, CONSTRAINT EMP3_EMP_JOB_FK FOREIGN KEY (JOB_ID)
+	     REFERENCES JOBS (JOB_ID) 
+, CONSTRAINT EMP3_EMP_MANAGER_FK FOREIGN KEY (MANAGER_ID)
+	     REFERENCES EMPLOYEES3 (EMPLOYEE_ID)
+
+
+
+
+
+
+

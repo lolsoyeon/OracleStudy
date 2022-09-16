@@ -138,7 +138,7 @@ CREATE OR REPLACE TRIGGER TRG_TEST1_DML
         BEFORE
         INSERT OR UPDATE OR DELETE ON TBL_TEST1
 BEGIN
-    IF( TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) <11 
+    IF( TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) < 11 
         OR TO_NUMBER(TO_CHAR(SYSDATE, 'HH24')) > 17 )
         THEN RAISE_APPLICATION_ERROR(-20003, '작업은 11:00 ~ 18:00 까지만 가능합니다.');
     END IF;
@@ -432,7 +432,7 @@ END INSA_PACK;
 
 -- CREATE OR REPLACE FUNCTION 함수명;
 
-=======================================================--오라클 끝 프로젝트 시작
+--=======================================================--오라클 끝 세미 프로젝트 시작
 
 
 
